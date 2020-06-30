@@ -6,6 +6,7 @@ import com.delivery.product.services.inventory.ProductInventoryService;
 import com.delivery.product.web.model.ImageDto;
 import com.delivery.product.web.model.ProductDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 
 public abstract class ProductMapperDecorator implements ProductMapper {
@@ -25,6 +26,10 @@ public abstract class ProductMapperDecorator implements ProductMapper {
     @Override
     public ProductDto productToProductDto(Product product) {
         ProductDto productDto = mapper.productToProductDto(product);
+        if(!StringUtils.isEmpty(product.getImageLarge())
+                || !StringUtils.isEmpty(product.getImageMedium())
+                || !StringUtils.isEmpty(product.getImageSmall())
+                )
         productDto.setImages(ImageDto.builder()
                         .imageMedium(product.getImageMedium())
                         .imageLarge(product.getImageLarge())

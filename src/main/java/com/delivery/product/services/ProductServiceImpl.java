@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
         ProductPagedList productPagedList;
         Page<Product> productPage;
 
-        if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(name)) {
+        if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(tags)) {
             //search both
             productPage = productRepository.findAllByNameAndStoreIdAndTagsIn(name, storeId.toString(),  tags, pageRequest);
         } else if (!StringUtils.isEmpty(name) && StringUtils.isEmpty(tags)) {
@@ -77,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
         ProductPagedList productPagedList;
         Page<Product> productPage;
 
-        if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(name)) {
+        if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(tags)) {
             //search both
             productPage = productRepository.findAllByNameAndTagsIn(name, tags, pageRequest);
         } else if (!StringUtils.isEmpty(name) && StringUtils.isEmpty(tags)) {

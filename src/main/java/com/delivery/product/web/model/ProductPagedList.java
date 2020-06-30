@@ -1,6 +1,7 @@
 package com.delivery.product.web.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.domain.PageImpl;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import java.io.Serializable;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductPagedList extends PageImpl<ProductDto> implements Serializable {
 
     static final long serialVersionUID = 1014715137848374834L;
