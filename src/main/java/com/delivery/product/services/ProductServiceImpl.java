@@ -1,7 +1,9 @@
 package com.delivery.product.services;
 
 import com.delivery.product.domain.Product;
+import com.delivery.product.domain.Tag;
 import com.delivery.product.repositories.ProductRepository;
+import com.delivery.product.repositories.TagRepository;
 import com.delivery.product.web.mappers.ProductMapper;
 import com.delivery.product.web.model.ProductDto;
 import com.delivery.product.web.model.ProductPagedList;
@@ -11,15 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -27,6 +27,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private TagRepository tagRepository;
 
     @Autowired
     private ProductMapper productMapper;
@@ -37,15 +40,20 @@ public class ProductServiceImpl implements ProductService {
         ProductPagedList productPagedList;
         Page<Product> productPage;
 
-        if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(tags)) {
+        Collection<Tag> tagsEntityCollection = null;
+        if(!CollectionUtils.isEmpty(tags)){
+            tagsEntityCollection = tagRepository.findAllByValueIn(tags);
+        }
+
+        if (!StringUtils.isEmpty(name) && !CollectionUtils.isEmpty(tags)) {
             //search both
-            productPage = productRepository.findAllByNameAndStoreIdAndTagsIn(name, storeId.toString(),  tags, pageRequest);
-        } else if (!StringUtils.isEmpty(name) && StringUtils.isEmpty(tags)) {
+            productPage = productRepository.findAllByNameAndStoreIdAndTagsIn(name, storeId.toString(),  tagsEntityCollection, pageRequest);
+        } else if (!StringUtils.isEmpty(name) && CollectionUtils.isEmpty(tags)) {
             //search beer_service name
             productPage = productRepository.findAllByNameAndStoreId(name, storeId.toString(), pageRequest);
-        } else if (StringUtils.isEmpty(name) && !StringUtils.isEmpty(tags)) {
+        } else if (StringUtils.isEmpty(name) && !CollectionUtils.isEmpty(tags)) {
             //search beer_service style
-            productPage = productRepository.findAllByTagsInAndStoreId(tags, storeId.toString(), pageRequest);
+            productPage = productRepository.findAllByTagsInAndStoreId(tagsEntityCollection, storeId.toString(), pageRequest);
         } else {
             productPage = productRepository.findAllByStoreId(storeId.toString(), pageRequest);
         }
@@ -83,7 +91,7 @@ public class ProductServiceImpl implements ProductService {
 
         boolean byPrice = minPrice != null || maxPrice != null;
         boolean byName = !StringUtils.isEmpty(name);
-        boolean byTags = !StringUtils.isEmpty(tags);
+        boolean byTags = !CollectionUtils.isEmpty(tags);
 
         boolean byAllFilters = byName && byTags && byPrice;
         boolean byPriceAndName = byPrice && byName && !byTags;
@@ -93,20 +101,25 @@ public class ProductServiceImpl implements ProductService {
         boolean byOnlyPrice = !byTags && !byName && byPrice;
         boolean byOnlyTags = byTags && !byName && !byPrice;
 
+        Collection<Tag> tagsEntityCollection = null;
+        if(byTags){
+            tagsEntityCollection = tagRepository.findAllByValueIn(tags);
+        }
+
         if (byAllFilters) {
-            productPage = productRepository.findAllByNameAndPriceBetweenAndTagsIn(name, minPrice, maxPrice, tags, pageRequest);
+            productPage = productRepository.findAllByNameAndPriceBetweenAndTagsIn(name, minPrice, maxPrice, tagsEntityCollection, pageRequest);
         } else if (byPriceAndName) {
             productPage = productRepository.findAllByNameAndPriceBetween(name, minPrice, maxPrice, pageRequest);
         } else if (byPriceAndTags) {
-            productPage = productRepository.findAllByPriceBetweenAndTagsIn(minPrice, maxPrice, tags, pageRequest);
+            productPage = productRepository.findAllByPriceBetweenAndTagsIn(minPrice, maxPrice, tagsEntityCollection, pageRequest);
         } else if(byTagsAndName){
-            productPage = productRepository.findAllByNameAndTagsIn(name, tags, pageRequest);
+            productPage = productRepository.findAllByNameAndTagsIn(name, tagsEntityCollection, pageRequest);
         } else if(byOnlyName){
             productPage = productRepository.findAllByName(name, pageRequest);
         }  else if(byOnlyPrice){
             productPage = productRepository.findAllByPriceBetween(minPrice, maxPrice, pageRequest);
         }  else if(byOnlyTags){
-            productPage = productRepository.findAllByTagsIn(tags, pageRequest);
+            productPage = productRepository.findAllByTagsIn(tagsEntityCollection, pageRequest);
         }  else {
             productPage = productRepository.findAll(pageRequest);
         }
