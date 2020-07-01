@@ -32,6 +32,8 @@ public class ProductController {
                                                                   @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
                                                                   @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                                                   @RequestParam(value = "name", required = false) String name,
+                                                                  @RequestParam(value = "minPrice", required = false) BigDecimal minPrice,
+                                                                  @RequestParam(value = "maxPrice", required = false) BigDecimal maxPrice,
                                                                   @RequestParam(value = "tags", required = false) Collection<String> tags,
                                                                   @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand){
 
@@ -47,7 +49,7 @@ public class ProductController {
             pageSize = DEFAULT_PAGE_SIZE;
         }
 
-        ProductPagedList productList = productService.listProductsFromStore( storeId, name, tags, PageRequest.of(pageNumber, pageSize), showInventoryOnHand);
+        ProductPagedList productList = productService.listProductsFromStore( storeId, name, tags, PageRequest.of(pageNumber, pageSize), showInventoryOnHand, minPrice, maxPrice);
 
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
