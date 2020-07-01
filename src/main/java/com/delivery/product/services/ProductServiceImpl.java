@@ -8,14 +8,18 @@ import com.delivery.product.web.model.ProductPagedList;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -29,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
 
     //@Cacheable(cacheNames = "productListFromStoreCache", condition = "#showInventoryOnHand == false ")
     @Override
-    public ProductPagedList listProductsFromStore(@NonNull UUID storeId, String name, String[] tags, PageRequest pageRequest, Boolean showInventoryOnHand) {
+    public ProductPagedList listProductsFromStore(@NonNull UUID storeId, String name, Collection<String> tags, PageRequest pageRequest, Boolean showInventoryOnHand) {
         ProductPagedList productPagedList;
         Page<Product> productPage;
 
@@ -73,20 +77,37 @@ public class ProductServiceImpl implements ProductService {
 
     //@Cacheable(cacheNames = "productListCache", condition = "#showInventoryOnHand == false ")
     @Override
-    public ProductPagedList listProducts(String name, String[] tags, PageRequest pageRequest, Boolean showInventoryOnHand) {
+    public ProductPagedList listProducts(String name, Collection<String> tags, PageRequest pageRequest, Boolean showInventoryOnHand, BigDecimal minPrice, BigDecimal maxPrice) {
         ProductPagedList productPagedList;
         Page<Product> productPage;
 
-        if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(tags)) {
-            //search both
+        boolean byPrice = minPrice != null || maxPrice != null;
+        boolean byName = !StringUtils.isEmpty(name);
+        boolean byTags = !StringUtils.isEmpty(tags);
+
+        boolean byAllFilters = byName && byTags && byPrice;
+        boolean byPriceAndName = byPrice && byName && !byTags;
+        boolean byPriceAndTags = byPrice && byTags && !byName;
+        boolean byTagsAndName = byTags && byName && !byPrice;
+        boolean byOnlyName = !byTags && byName && !byPrice;
+        boolean byOnlyPrice = !byTags && !byName && byPrice;
+        boolean byOnlyTags = byTags && !byName && !byPrice;
+
+        if (byAllFilters) {
+            productPage = productRepository.findAllByNameAndPriceBetweenAndTagsIn(name, minPrice, maxPrice, tags, pageRequest);
+        } else if (byPriceAndName) {
+            productPage = productRepository.findAllByNameAndPriceBetween(name, minPrice, maxPrice, pageRequest);
+        } else if (byPriceAndTags) {
+            productPage = productRepository.findAllByPriceBetweenAndTagsIn(minPrice, maxPrice, tags, pageRequest);
+        } else if(byTagsAndName){
             productPage = productRepository.findAllByNameAndTagsIn(name, tags, pageRequest);
-        } else if (!StringUtils.isEmpty(name) && StringUtils.isEmpty(tags)) {
-            //search beer_service name
+        } else if(byOnlyName){
             productPage = productRepository.findAllByName(name, pageRequest);
-        } else if (StringUtils.isEmpty(name) && !StringUtils.isEmpty(tags)) {
-            //search beer_service style
+        }  else if(byOnlyPrice){
+            productPage = productRepository.findAllByPriceBetween(minPrice, maxPrice, pageRequest);
+        }  else if(byOnlyTags){
             productPage = productRepository.findAllByTagsIn(tags, pageRequest);
-        } else {
+        }  else {
             productPage = productRepository.findAll(pageRequest);
         }
 

@@ -20,11 +20,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductDto {
 
     @Null
     private UUID id;
+
+    @Null
+    private Long version;
 
     @Null
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ssZ", shape=JsonFormat.Shape.STRING)
@@ -37,6 +40,10 @@ public class ProductDto {
     @NotBlank
     private String name;
 
+    @NotBlank
+    private String description;
+
+    @NotNull
     private ImageDto images;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -47,8 +54,6 @@ public class ProductDto {
     private Integer quantityOnHand;
 
     private UUID storeId;
-
-    private Boolean useInventory;
 
     private Set<String> tags;
 }

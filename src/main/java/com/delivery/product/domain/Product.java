@@ -30,6 +30,9 @@ public class Product{
     @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false )
     private UUID id;
 
+    @Version
+    private Long version;
+
     @CreationTimestamp
     @Column(updatable = false)
     private Timestamp createdDate;
@@ -38,14 +41,13 @@ public class Product{
     private Timestamp lastModifiedDate;
 
     private String name;
+
     private String description;
 
     @Column(unique = true, length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false )
     private String upc;
 
     private BigDecimal price;
-
-    private Boolean useInventory;
 
     private String imageLarge;
     private String imageMedium;

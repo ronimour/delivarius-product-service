@@ -26,10 +26,10 @@ public abstract class ProductMapperDecorator implements ProductMapper {
     @Override
     public ProductDto productToProductDto(Product product) {
         ProductDto productDto = mapper.productToProductDto(product);
-        if(!StringUtils.isEmpty(product.getImageLarge())
+  /*      if(!StringUtils.isEmpty(product.getImageLarge())
                 || !StringUtils.isEmpty(product.getImageMedium())
                 || !StringUtils.isEmpty(product.getImageSmall())
-                )
+                )*/
         productDto.setImages(ImageDto.builder()
                         .imageMedium(product.getImageMedium())
                         .imageLarge(product.getImageLarge())

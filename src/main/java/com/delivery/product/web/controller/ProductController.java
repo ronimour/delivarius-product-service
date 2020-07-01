@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class ProductController {
                                                                   @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
                                                                   @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                                                   @RequestParam(value = "name", required = false) String name,
-                                                                  @RequestParam(value = "tags[]", required = false) String[] tags,
+                                                                  @RequestParam(value = "tags[]", required = false) Collection<String> tags,
                                                                   @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand){
 
         if (showInventoryOnHand == null) {
@@ -45,7 +47,7 @@ public class ProductController {
             pageSize = DEFAULT_PAGE_SIZE;
         }
 
-        ProductPagedList productList = productService.listProducts(name, tags, PageRequest.of(pageNumber, pageSize), showInventoryOnHand);
+        ProductPagedList productList = productService.listProductsFromStore( storeId, name, tags, PageRequest.of(pageNumber, pageSize), showInventoryOnHand);
 
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
@@ -54,7 +56,9 @@ public class ProductController {
     public ResponseEntity<ProductPagedList> listProducts(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
                                                          @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                                          @RequestParam(value = "name", required = false) String name,
-                                                         @RequestParam(value = "tags[]", required = false) String[] tags,
+                                                         @RequestParam(value = "minPrice", required = false) BigDecimal minPrice,
+                                                         @RequestParam(value = "maxPrice", required = false) BigDecimal maxPrice,
+                                                         @RequestParam(value = "tags[]", required = false) Collection<String> tags,
                                                          @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand){
 
         if (showInventoryOnHand == null) {
@@ -69,7 +73,7 @@ public class ProductController {
             pageSize = DEFAULT_PAGE_SIZE;
         }
 
-        ProductPagedList productList = productService.listProducts(name, tags, PageRequest.of(pageNumber, pageSize), showInventoryOnHand);
+        ProductPagedList productList = productService.listProducts(name, tags, PageRequest.of(pageNumber, pageSize), showInventoryOnHand, minPrice, maxPrice);
 
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
