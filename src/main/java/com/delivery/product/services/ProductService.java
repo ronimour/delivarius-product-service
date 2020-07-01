@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface ProductService {
 
-    ProductPagedList listProductsFromStore(UUID storeId, String name, Collection<String> tags, PageRequest pageRequest, Boolean showInventoryOnHand);
+    ProductPagedList listProductsFromStore(UUID storeId, String name, Collection<String> tags, PageRequest pageRequest, Boolean showInventoryOnHand, BigDecimal minPrice, BigDecimal maxPrice);
 
     ProductPagedList listProducts(String name, Collection<String> tags, PageRequest pageRequest, Boolean showInventoryOnHand, BigDecimal minPrice, BigDecimal maxPrice);
 
