@@ -8,7 +8,7 @@ import java.util.UUID;
 @Service
 public class ProductInventoryServiceImpl implements ProductInventoryService {
 
-    public Integer getOnhandInventory(UUID productId){
+    public Integer getOnHandInventory(UUID productId){
         return 0;
     }
 }

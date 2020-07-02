@@ -5,7 +5,7 @@ spring:
     name: delivery-product-service
   jackson:
     property-naming-strategy: SNAKE_CASE
-    default-property-inclusion: non_null
+    default-property-inclusion: NON_NULL
 
 logging:
   level:
@@ -14,3 +14,10 @@ logging:
         web:
           filter:
             CommonsRequestLoggingFilter: DEBUG
+#Keycloak Configuration
+keycloak:
+  auth-server-url: http://localhost:8180/auth
+  realm: delivarius
+  resource: auth-client
+  public-client: true
+  principal-attribute: preferred_username

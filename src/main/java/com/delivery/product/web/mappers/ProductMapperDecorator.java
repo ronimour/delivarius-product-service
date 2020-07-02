@@ -6,7 +6,6 @@ import com.delivery.product.services.inventory.ProductInventoryService;
 import com.delivery.product.web.model.ImageDto;
 import com.delivery.product.web.model.ProductDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 
 
 public abstract class ProductMapperDecorator implements ProductMapper {
@@ -41,7 +40,7 @@ public abstract class ProductMapperDecorator implements ProductMapper {
     @Override
     public ProductDto productToProductDtoWithInventory(Product beer) {
         ProductDto dto = this.productToProductDto(beer);
-        dto.setQuantityOnHand(productInventoryService.getOnhandInventory(beer.getId()));
+        dto.setQuantityOnHand(productInventoryService.getOnHandInventory(beer.getId()));
         return dto;
     }
 
