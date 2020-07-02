@@ -20,7 +20,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductDto {
 
     @Null
@@ -43,7 +42,7 @@ public class ProductDto {
     @NotBlank
     private String description;
 
-    @NotNull
+    /*@NotNull*/
     private ImageDto images;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -53,6 +52,7 @@ public class ProductDto {
 
     private Integer quantityOnHand;
 
+    @NotNull
     private UUID storeId;
 
     private Set<String> tags;

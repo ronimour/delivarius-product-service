@@ -5,3 +5,12 @@ spring:
     name: delivery-product-service
   jackson:
     property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG
